@@ -1,0 +1,116 @@
+#!/bin/python3
+
+import math
+import os
+import random
+import re
+import sys
+
+
+#
+# Complete the 'ev_roadtrip_costs' function below.
+#
+# The function accepts following parameters:
+#  1. STRING_ARRAY names - The names of each model of vehicle
+#  2. INTEGER_ARRAY vehicle_ranges - The range each vehicle may travel on a single charge
+#  3. DOUBLE_ARRAY vehicle_rental_prices - The initial price to rent each vehicle
+#
+
+# $5.00 The cost per use of each charging station
+# 1000km The total distance to travel
+# $20.00 The cost of a meal
+# 90km/h The average driving speed
+# 60min The time it takes to fully charge a vehicle
+
+def ev_roadtrip_costs(names, vehicle_ranges, vehicle_rental_prices):
+    # Write your code here
+    
+    trip_dist=1000 #from probelm statement
+    fee_to_charge=5 #from problem statement
+    
+    #*determine trip costs for all vehicles:
+    vehicle_charges=[] #this is used later to help determine total expenses when stopping for meals
+    vehicle_trip_costs=[]
+    for i in range(len(names)):
+        num_charges=math.ceil(trip_dist/vehicle_ranges[i]) #ceil method rounds up so that the car is fully charged at the end of the trip (car only needs 2 charges to arrive, but needs 3 charges to reutrn 100% charged)
+        vehicle_charges.append(num_charges) #each charge adds one hour to the trip time
+        # print(vehicle_charges)
+        trip_costs=(fee_to_charge*num_charges)+vehicle_rental_prices[i] #calulates trip cost using rental price and the fee to return car fully charged after 1000km 
+        vehicle_trip_costs.append(trip_costs)
+    # print(vehicle_trip_costs)
+    
+    #*determine least expensive trip cost:
+    least_expensive=0 
+    least_expensive=min(vehicle_trip_costs)
+    
+    #*determine which vehicles have the least expensive cost, even if there is more than one:
+    names_of_least_expensive=[] 
+    for i in range(len(names)):  
+        if vehicle_trip_costs[i]==least_expensive:
+            names_of_least_expensive.append(names[i]) #adds vehicles to a list
+            # print(names_of_least_expensive)
+    
+    #*determine how many vehicles have the least expensive cost:
+    num_of_names=len(names_of_least_expensive)
+            # print(num_of_names)
+    
+    #*define print statements for trips with one or multiple vehicle(s) with the least expensive cost:
+    if num_of_names == 1:    #only 1 vehicle with the minimum cost
+        print(f"The least expensive vehicle is the {names_of_least_expensive[0]} which will cost ${least_expensive:.2f} to take on the trip.") #this works because there is only one name in the list (index 0); .2f is a format specifier indicating two digits after the decimal
+    elif num_of_names > 1: #multiple vehicles with the minimum cost
+        string_of_names = ", ".join(names_of_least_expensive) #join method concatenates names in the list using the comma separator between elements 
+        # print(string_of_names)
+        print(f"The least expensive vehicles are {string_of_names} which will cost ${least_expensive:.2f} to take on the trip.")
+ 
+    #***total expenses including meals:
+    stop_interval=3 
+    meal_cost=20
+    charge_time=1
+    vehicle_speed=90
+    
+    #*trip time, number of meals, and total expenses for all vehicles:
+    vehicle_trip_times=[]
+    vehicle_meals=[]
+    vehicle_total_expenses=[]
+    #assumptions: does not include time or miles it takes to find food and eat; 
+    for i in range(len(names)):
+        trip_time=(trip_dist/vehicle_speed)+(vehicle_charges[i]*1) #Leaf: 1000/90=11.1hr to drive + 1000/200*1=5hr to charge = 16.1hrs total
+        vehicle_trip_times.append(trip_time)
+        num_meals=trip_time//stop_interval #Leaf: 16.1/3=5meals total
+        vehicle_meals.append(num_meals)
+        total_expenses=(num_meals*meal_cost)+vehicle_trip_costs[i] #Leaf: 5*$20=$100 + 1000/200*$5+$85=$110 = $210 total
+        vehicle_total_expenses.append(total_expenses)
+    # print(vehicle_trip_times)
+    # print(vehicle_meals)
+    # print(vehicle_total_expenses)
+    
+    #can verfiy correctness of the total expense code using manual calculations; use code without meals to verify the minimum expense
+   
+    # pass
+
+if __name__ == '__main__':
+    names_count = int(input().strip())
+
+    names = []
+
+    for _ in range(names_count):
+        names_item = input()
+        names.append(names_item)
+
+    vehicle_ranges_count = int(input().strip())
+
+    vehicle_ranges = []
+
+    for _ in range(vehicle_ranges_count):
+        vehicle_ranges_item = int(input().strip())
+        vehicle_ranges.append(vehicle_ranges_item)
+
+    vehicle_rental_prices_count = int(input().strip())
+
+    vehicle_rental_prices = []
+
+    for _ in range(vehicle_rental_prices_count):
+        vehicle_rental_prices_item = float(input().strip())
+        vehicle_rental_prices.append(vehicle_rental_prices_item)
+
+    ev_roadtrip_costs(names, vehicle_ranges, vehicle_rental_prices)
